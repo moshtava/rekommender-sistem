@@ -1,0 +1,10 @@
+django
+djangorestframework
+pandas
+numpy
+scikit-learn
+surprise
+jupyter
+djangorestframework-simplejwt
+matplotlib
+seaborn
