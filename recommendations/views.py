@@ -10,8 +10,7 @@ class TransactionListCreate(generics.ListCreateAPIView):
    queryset = Transaction.objects.all()
    serializer_class = TransactionSerializer
    
-   @api_view(['GET'])
-   def recommend_cryptos(request, user_id):
+   def get(request, user_id):
       transactions = Transaction.objects.filter(user_id=user_id)
       if not transactions.exists():
          return Response({"error": "User not found"}, status=404)
