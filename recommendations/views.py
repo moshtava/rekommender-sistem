@@ -32,3 +32,7 @@ class TransactionRetrieve(generics.RetrieveAPIView):
       df['predicted_amount'] = predictions
       recommendations = df.sort_values(by='predicted_amount', ascending=False).head(5)
       return Response(recommendations[['crypto_id', 'predicted_amount']].to_dict(orient='records'))
+
+class TransactionList(generics.ListAPIView):
+   queryset = Transaction.objects.all()
+   serializer_class = TransactionSerializer
