@@ -31,4 +31,32 @@ class Command(BaseCommand):
       transactions = [Transaction(**row) for row in df.to_dict(orient='records')]
       Transaction.objects.bulk_create(transactions)
       self.stdout.write(self.style.SUCCESS('Successfully inserted 10,000 transactions'))
+      self.train_xgbst()
       
+   def train_xgbst(self):
+      transactions = Transaction.objects.all().values()
+      df = pd.DataFrame(transactions)
+      label_encoders = {}
+      for column in ['transaction_type', 'user_location', 'market_trend']:
+         le = LabelEncoder()
+         df[column] = le.fit_transform(df[column])
+         label_encoders[column] = le
+      X = df.drop(['transaction_amount', 'transaction_date'], axis=1)
+      y = df['transaction_amount']
+      X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+      dtrain = xgb.DMatrix(X_train, label=y_train)
+      dtest = xgb.DMatrix(X_test, label=y_test)
+      params = {
+      'objective': 'reg:squarederror',
+      'max_depth': 6,
+      'eta': 0.3,
+      'eval_metric': 'rmse'
+      }
+      bst = xgb.train(params, dtrain, num_boost_round=100)
+      y_pred = bst.predict(dtest)
+      rmse = mean_squared_error(y_test, y_pred, squared=False)
+      self.stdout.write(self.style.SUCCESS(f"RMSE: {rmse}"))
+      project_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+      model_path = os.path.join(project_dir, 'xgboost_model.json')
+      bst.save_model(model_path)
+      self.stdout.write(self.style.SUCCESS(f"Model saved to {model_path}"))
