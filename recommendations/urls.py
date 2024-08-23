@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TransactionCreate, TransactionList, TransactionRetrieve
+from .views import TransactionList, TransactionRetrieve
 
 urlpatterns = [
     
