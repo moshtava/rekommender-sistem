@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import TransactionListCreate, recommend_cryptos
+from .views import TransactionCreate, TransactionList, TransactionRetrieve
 
 urlpatterns = [
-path('transactions/', TransactionListCreate.as_view(), name='transaction-list-create'),
-path('recommend/<int:user_id>/', recommend_cryptos, name='recommend-cryptos'),
+    
+path('transactions/', TransactionList.as_view(), name='transaction-list-create'),
+path('recommend/<int:user_id>/', TransactionRetrieve.as_view(), name='recommend-cryptos'),
 ]
